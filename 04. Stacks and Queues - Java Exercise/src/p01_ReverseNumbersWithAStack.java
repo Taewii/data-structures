@@ -4,7 +4,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
-import java.util.Queue;
 
 public class p01_ReverseNumbersWithAStack {
     public static void main(String[] args) throws IOException {

@@ -41,7 +41,6 @@ public class LinkedStack<E> {
     }
 
     private class Node<E> {
-
         private E value;
         private Node<E> nextNode;
 

@@ -6,6 +6,7 @@ public class Main {
         ats.push(1);
         ats.push(2);
         ats.push(3);
+        ats.pop();
 
         // ClassCastException ...
         Integer[] integers = ats.toArray();

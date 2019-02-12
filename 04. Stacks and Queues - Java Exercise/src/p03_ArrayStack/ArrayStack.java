@@ -37,7 +37,9 @@ public class ArrayStack<T> {
             throw new IllegalArgumentException();
         }
 
-        return this.elements[--this.size];
+        T element = this.elements[--this.size ];
+        this.elements[this.size] = null;
+        return element;
     }
 
     public T[] toArray() {
