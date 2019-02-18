@@ -1,5 +1,7 @@
+import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.function.Consumer;
 
 public class BinarySearchTree<T extends Comparable<T>> {
@@ -28,7 +30,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
     }
 
     public int getNodesCount() {
-        throw new UnsupportedOperationException();
+        return this.nodesCount;
     }
 
     public void insert(T value) {
@@ -197,23 +199,115 @@ public class BinarySearchTree<T extends Comparable<T>> {
     }
 
     public T ceil(T element) {
-        throw new UnsupportedOperationException();
+        return this.ceil(this.root, element);
+    }
+
+    private T ceil(Node node, T target) {
+        if (node == null) {
+            return null;
+        }
+
+        int compare = target.compareTo(node.value);
+        if (compare > 0) {
+            return this.ceil(node.right, target);
+        }
+
+        T result = ceil(node.left, target);
+        if (result == null) {
+            return node.value;
+        }
+
+        return result;
     }
 
     public T floor(T element) {
-        throw new UnsupportedOperationException();
+        return this.floor(this.root, element);
+    }
+
+    private T floor(Node node, T target) {
+        if (node == null) {
+            return null;
+        }
+
+        int compare = target.compareTo(node.value);
+        if (compare < 0) {
+            return this.floor(node.left, target);
+        }
+
+        T result = floor(node.right, target);
+        if (result == null) {
+            return node.value;
+        }
+
+        return result;
     }
 
     public void delete(T key) {
-        throw new UnsupportedOperationException();
+        Node node = this.deleteRecursively(this.root, key);
+    }
+
+    private Node deleteRecursively(Node node, T key) {
+        if (node == null) {
+            return null;
+        }
+
+        if (key.compareTo(node.value) < 0)
+            node.left = deleteRecursively(node.left, key);
+        else if (key.compareTo(node.value) > 0)
+            node.right = deleteRecursively(node.right, key);
+        else {
+            if (node.left == null) {
+                return node.right;
+            } else if (node.right == null) {
+                return node.left;
+            }
+            node.value = minValue(node.right);
+            node.right = deleteRecursively(node.right, node.value);
+        }
+        return node;
     }
 
     public int rank(T item) {
-        throw new UnsupportedOperationException();
+        if (this.root == null) {
+            return 0;
+        }
+
+        int count = 0;
+        Queue<Node> queue = new ArrayDeque<>();
+        queue.offer(this.root);
+
+        while (!queue.isEmpty()) {
+            Node current = queue.poll();
+            if (current.value.compareTo(item) < 0) {
+                count++;
+            }
+
+            if (current.right != null) {
+                queue.offer(current.right);
+            }
+
+            if (current.left != null) {
+                queue.offer(current.left);
+            }
+        }
+        return count;
     }
 
     public T select(int n) {
-        throw new UnsupportedOperationException();
+        Node node = findNodeWithNElementsLessThanN(this.root, 0, n);
+        return node.value;
+    }
+
+    private Node findNodeWithNElementsLessThanN(Node node, int count, int target) {
+        if (node == null) {
+            return null;
+        }
+
+        if (count == target) {
+            return node;
+        }
+
+        return findNodeWithNElementsLessThanN(node.right, count + 1, target);
     }
 
     class Node {
@@ -258,4 +352,3 @@ public class BinarySearchTree<T extends Comparable<T>> {
         }
     }
 }
-
