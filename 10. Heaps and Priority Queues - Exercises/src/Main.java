@@ -23,7 +23,7 @@ public class Main {
 
         for (Node node : path) {
             int row = node.getRow();
-            int col = node.getRow();
+            int col = node.getCol();
             map[row][col] = '@';
         }
 
