@@ -3,6 +3,9 @@ import java.util.LinkedList;
 import java.util.function.Consumer;
 
 public class RedBlackTree<T extends Comparable<T>> {
+    private final boolean RED = true;
+    private final boolean BLACK = false;
+
     private Node root;
     private int nodesCount;
 
@@ -28,38 +31,42 @@ public class RedBlackTree<T extends Comparable<T>> {
     }
 
     public int getNodesCount() {
-        return this.nodesCount;
+        return this.getNodesCount(this.root);
+    }
+
+    public int getNodesCount(Node node) {
+        if (node == null) return 0;
+        return node.childrenCount;
     }
 
     public void insert(T value) {
-        this.nodesCount++;
+        this.root = this.insert(this.root, value);
+        this.root.color = this.BLACK;
+    }
 
-        if (this.root == null) {
-            this.root = new Node(value);
-            return;
+    private Node insert(Node node, T value) {
+        if (node == null) {
+            return new Node(value);
         }
 
-        Node parent = null;
-        Node current = this.root;
-        while (current != null) {
-            parent = current;
-            parent.childrenCount++;
-
-            if (value.compareTo(current.value) < 0) {
-                current = current.left;
-            } else if (value.compareTo(current.value) > 0) {
-                current = current.right;
-            } else {
-                return;
-            }
+        if (node.value.compareTo(value) > 0) {
+            node.left = this.insert(node.left, value);
+        } else if (node.value.compareTo(value) < 0) {
+            node.right = this.insert(node.right, value);
         }
 
-        Node newNode = new Node(value);
-        if (value.compareTo(parent.value) < 0) {
-            parent.left = newNode;
-        } else {
-            parent.right = newNode;
+        if (this.isRed(node.right) && !this.isRed(node.left)) {
+            node = this.rotateLeft(node);
         }
+        if (this.isRed(node.left) && this.isRed(node.left.left)) {
+            node = this.rotateRight(node);
+        }
+        if (this.isRed(node.left) && this.isRed(node.right)) {
+            this.flipColors(node);
+        }
+
+        node.childrenCount = 1 + this.getNodesCount(node.left) + this.getNodesCount(node.right);
+        return node;
     }
 
     public boolean contains(T value) {
@@ -202,8 +209,7 @@ public class RedBlackTree<T extends Comparable<T>> {
 
         if (key.compareTo(root.value) < 0) {
             root.left = deleteRecursive(root.left, key);
-        }
-        else if (key.compareTo(root.value) > 0) {
+        } else if (key.compareTo(root.value) > 0) {
             root.right = deleteRecursive(root.right, key);
         } else {
             if (root.left == null) {
@@ -276,16 +282,63 @@ public class RedBlackTree<T extends Comparable<T>> {
         return node.childrenCount;
     }
 
+    private boolean isRed(Node node) {
+        if (node == null) return false;
+        return node.color == this.RED;
+    }
+
+    private void flipColors(Node node) {
+        node.color = this.RED;
+        node.left.color = this.BLACK;
+        node.right.color = this.BLACK;
+    }
+
+    private Node rotateLeft(Node node) {
+        Node temp = node.right;
+        node.right = temp.left;
+        temp.left = node;
+
+        temp.color = node.color;
+        node.color = this.RED;
+        temp.childrenCount = node.childrenCount;
+        node.childrenCount = 1 + this.size(node.left) + this.size(node.right);
+
+        return temp;
+    }
+
+    private Node rotateRight(Node node) {
+        Node temp = node.left;
+        node.left = temp.right;
+        temp.right = node;
+
+        temp.color = node.color;
+        node.color = this.RED;
+        temp.childrenCount = node.childrenCount;
+        node.childrenCount = 1 + this.size(node.left) + this.size(node.right);
+
+        return temp;
+    }
+
     class Node {
         private T value;
         private Node left;
         private Node right;
 
+        private boolean color;
         private int childrenCount;
 
         public Node(T value) {
             this.value = value;
             this.childrenCount = 1;
+            this.color = RED;
+        }
+
+        public boolean isColor() {
+            return this.color;
+        }
+
+        public void setColor(boolean color) {
+            this.color = color;
         }
 
         public T getValue() {
@@ -318,47 +371,3 @@ public class RedBlackTree<T extends Comparable<T>> {
         }
     }
 }
-
-//    public T ceil(T element) {
-//        return ceil(this.root, element);
-//    }
-//
-//    private T ceil(Node node, T input) {
-//        if (node == null) {
-//            return null;
-//        }
-//
-//        if (node.value == input) {
-//            return node.value;
-//        }
-//
-//        if (node.value.compareTo(input) < 0) {
-//            return ceil(node.right, input);
-//        }
-//
-//        T ceil = ceil(node.left, input);
-//        return (ceil != null) ? ceil : node.value;
-//    }
-//
-//    public T floor(T element) {
-//        return floor(this.root, element);
-//    }
-//
-//    private T floor(Node node, T input) {
-//        if (node == null) {
-//            return null;
-//        }
-//
-//        if (node.value == input) {
-//            return node.value;
-//        }
-//
-//        if (node.value.compareTo(input) > 0) {
-//            return floor(node.left, input);
-//        }
-//
-//        T floor = floor(node.right, input);
-//        return (floor != null) ? floor : node.value;
-//    }
-
-

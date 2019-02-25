@@ -56,7 +56,7 @@ public class RedBlackTreeTests {
     }
 
 
-    @Test
+    @Test(timeout = 600)
     public void insert_MultipleElements_ShouldHaveQuickFind() {
         RedBlackTree<Integer> rbt = new RedBlackTree<>();
 
