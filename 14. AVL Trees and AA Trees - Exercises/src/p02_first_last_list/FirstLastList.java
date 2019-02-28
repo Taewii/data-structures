@@ -1,47 +1,77 @@
 package p02_first_last_list;
 
-import java.util.ArrayList;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FirstLastList<T extends Comparable<T>> implements IFirstLastList<T> {
-    private ArrayList<T> elements = new ArrayList<T>();
+    private List<T> elements;
+
+    public FirstLastList() {
+        this.elements = new ArrayList<>();
+    }
 
     @Override
     public void add(T element) {
-        throw new UnsupportedOperationException();
+        this.elements.add(element);
     }
 
     @Override
     public int getCount() {
-        throw new UnsupportedOperationException();
+        return this.elements.size();
     }
 
     @Override
     public Iterable<T> first(int count) {
-        throw new UnsupportedOperationException();
+        if (count > this.elements.size()) {
+            throw new IllegalArgumentException();
+        }
+        return this.elements.subList(0, count);
     }
 
     @Override
     public Iterable<T> last(int count) {
-        throw new UnsupportedOperationException();
+        if (count > this.elements.size()) {
+            throw new IllegalArgumentException();
+        }
+
+        Deque<T> stack = new ArrayDeque<>();
+        for (int i = this.elements.size() - count; i < this.elements.size(); i++) {
+            stack.push(this.elements.get(i));
+        }
+
+        return stack;
     }
 
     @Override
     public Iterable<T> min(int count) {
-        throw new UnsupportedOperationException();
+        if (count > this.elements.size()) {
+            throw new IllegalArgumentException();
+        }
+        return this.elements.stream().sorted(Comparable::compareTo).limit(count).collect(Collectors.toList());
     }
 
     @Override
     public Iterable<T> max(int count) {
-        throw new UnsupportedOperationException();
+        if (count > this.elements.size()) {
+            throw new IllegalArgumentException();
+        }
+        return this.elements.stream().sorted(Comparator.reverseOrder()).limit(count).collect(Collectors.toList());
     }
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException();
+        this.elements.clear();
     }
 
     @Override
     public int removeAll(T element) {
-        throw new UnsupportedOperationException();
+        int originalLength = this.elements.size();
+        for (int i = 0; i < this.elements.size(); i++) {
+            if (this.elements.get(i).compareTo(element) == 0) {
+                this.elements.remove(i);
+                i--;
+            }
+        }
+        return originalLength - this.elements.size();
     }
 }
