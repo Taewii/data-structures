@@ -1,3 +1,5 @@
+package e01_interval_tree;
+
 import org.junit.Assert;
 import org.junit.Test;
 

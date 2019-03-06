@@ -1,3 +1,5 @@
+package e01_interval_tree;
+
 public class Interval {
 
     private double lo;
