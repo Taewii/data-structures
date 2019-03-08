@@ -1,3 +1,5 @@
+package p02_quad_tree;
+
 import org.junit.Assert;
 import org.junit.Test;
 

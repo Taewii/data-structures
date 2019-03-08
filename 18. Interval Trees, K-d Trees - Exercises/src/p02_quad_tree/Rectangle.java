@@ -1,3 +1,5 @@
+package p02_quad_tree;
+
 public class Rectangle {
 
     private int x1;

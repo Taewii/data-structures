@@ -1,3 +1,5 @@
+package p02_quad_tree;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +40,7 @@ public class Node<T> {
     }
 
     public boolean shouldSplit() {
-        throw new UnsupportedOperationException();
+        return this.items.size() >= 4 && this.children == null;
     }
 
     @Override

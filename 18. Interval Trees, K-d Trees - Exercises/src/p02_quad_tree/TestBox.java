@@ -1,3 +1,5 @@
+package p02_quad_tree;
+
 public class TestBox implements Boundable, Comparable<TestBox> {
 
     public static final int WIDTH = 10;
