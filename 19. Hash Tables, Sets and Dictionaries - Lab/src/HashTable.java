@@ -1,22 +1,62 @@
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 public class HashTable<TKey, TValue> implements Iterable<KeyValue<TKey, TValue>> {
 
+    private static final int DEFAULT_CAPACITY = 16;
+    private static final float LOAD_FACTOR = 0.75f;
+
     private int size;
-
     private int capacity;
+    private int fillFactor;
+    private int maxElements;
+    private List<KeyValue<TKey, TValue>>[] hashTable;
 
-    public HashTable() {
-        throw new UnsupportedOperationException();
-    }
-
-    public HashTable(int capacity) {
-        throw new UnsupportedOperationException();
+    @SuppressWarnings("unchecked")
+    public HashTable(int... capacity) {
+        this.hashTable = capacity.length == 0 ? new LinkedList[DEFAULT_CAPACITY] : new LinkedList[capacity[0]];
+        this.capacity = this.hashTable.length;
+        this.maxElements = (int) (this.capacity * LOAD_FACTOR);
     }
 
     public void add(TKey key, TValue value) {
-        throw new UnsupportedOperationException();
-        // Note: throw an exception on duplicated key
+
+        this.resizeIfNeeded();
+        int hash = Math.abs(key.hashCode() % this.capacity);
+
+        if (this.hashTable[hash] == null) {
+            this.hashTable[hash] = new LinkedList<>();
+        }
+
+        for (KeyValue<TKey, TValue> keyValue : this.hashTable[hash]) {
+            if (keyValue.getKey().equals(key)) {
+                throw new IllegalArgumentException("Key already exists.");
+            }
+        }
+
+        this.hashTable[hash].add(new KeyValue<>(key, value));
+        this.size++;
+    }
+
+    private void resizeIfNeeded() {
+        if (this.size < this.maxElements) {
+            return;
+        }
+
+        HashTable<TKey, TValue> newTable = new HashTable<>(this.capacity * 2);
+        for (List<KeyValue<TKey, TValue>> keyValues : this.hashTable) {
+            if (keyValues != null) {
+                for (KeyValue<TKey, TValue> keyValue : keyValues) {
+                    newTable.add(keyValue.getKey(), keyValue.getValue());
+                }
+            }
+        }
+
+        this.hashTable = newTable.hashTable;
+        this.size = newTable.size;
+        this.capacity = newTable.capacity;
+        this.maxElements = (int) (this.capacity * LOAD_FACTOR);
     }
 
     public int size() {
@@ -32,32 +72,65 @@ public class HashTable<TKey, TValue> implements Iterable<KeyValue<TKey, TValue>>
     }
 
     public boolean addOrReplace(TKey key, TValue value) {
-        throw new UnsupportedOperationException();
+        KeyValue<TKey, TValue> keyValue = this.find(key);
+        if (keyValue != null) {
+            keyValue.setValue(value);
+            return true;
+        }
+
+        this.add(key, value);
+        return true;
     }
 
     public TValue get(TKey key) {
-        throw new UnsupportedOperationException();
-        // Note: throw an exception on missing key
+        KeyValue<TKey, TValue> keyValue = this.find(key);
+        if (keyValue == null) {
+            throw new IllegalArgumentException();
+        }
+        return keyValue.getValue();
     }
 
     public boolean tryGetValue(TKey key, TValue value) {
-        throw new UnsupportedOperationException();
+        return this.find(key) != null;
     }
 
     public KeyValue<TKey, TValue> find(TKey key) {
-        throw new UnsupportedOperationException();
+        int hash = Math.abs(key.hashCode() % this.capacity);
+
+        if (this.hashTable[hash] != null) {
+            for (KeyValue<TKey, TValue> keyValue : this.hashTable[hash]) {
+                if (keyValue.getKey().equals(key)) {
+                    return keyValue;
+                }
+            }
+        }
+
+        return null;
     }
 
     public boolean containsKey(TKey key) {
-        throw new UnsupportedOperationException();
+        return this.find(key) != null;
     }
 
     public boolean remove(TKey key) {
-        throw new UnsupportedOperationException();
+        int hash = Math.abs(key.hashCode() % this.capacity);
+
+        if (this.hashTable[hash] != null) {
+            for (KeyValue<TKey, TValue> keyValue : this.hashTable[hash]) {
+                if (keyValue.getKey().equals(key)) {
+                    this.hashTable[hash].remove(keyValue);
+                    this.size--;
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
+    @SuppressWarnings("unchecked")
     public void clear() {
-        throw new UnsupportedOperationException();
+        this.hashTable = new LinkedList[this.capacity];
     }
 
     public Iterable<TKey> keys() {
