@@ -9,7 +9,6 @@ public class HashTable<TKey, TValue> implements Iterable<KeyValue<TKey, TValue>>
 
     private int size;
     private int capacity;
-    private int fillFactor;
     private int maxElements;
     private List<KeyValue<TKey, TValue>>[] hashTable;
 
@@ -130,19 +129,31 @@ public class HashTable<TKey, TValue> implements Iterable<KeyValue<TKey, TValue>>
 
     @SuppressWarnings("unchecked")
     public void clear() {
+        this.capacity = DEFAULT_CAPACITY;
         this.hashTable = new LinkedList[this.capacity];
+        this.setSize(0);
     }
 
     public Iterable<TKey> keys() {
-        throw new UnsupportedOperationException();
+        List<TKey> keys = new LinkedList<>();
+        this.forEach(e -> keys.add(e.getKey()));
+        return keys;
     }
 
     public Iterable<TValue> values() {
-        throw new UnsupportedOperationException();
+        List<TValue> keys = new LinkedList<>();
+        this.forEach(e -> keys.add(e.getValue()));
+        return keys;
     }
 
     @Override
     public Iterator<KeyValue<TKey, TValue>> iterator() {
-        return null;
+        List<KeyValue<TKey, TValue>> elements = new LinkedList<>();
+        for (List<KeyValue<TKey, TValue>> keyValueList : this.hashTable) {
+            if (keyValueList != null) {
+                elements.addAll(keyValueList);
+            }
+        }
+        return elements.iterator();
     }
 }
