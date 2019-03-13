@@ -1,3 +1,5 @@
+package p01_hash_table;
+
 import org.junit.Assert;
 import org.junit.Test;
 

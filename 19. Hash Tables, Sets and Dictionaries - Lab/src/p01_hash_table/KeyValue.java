@@ -1,3 +1,5 @@
+package p01_hash_table;
+
 import java.util.Objects;
 
 public class KeyValue<TKey, TValue> {
