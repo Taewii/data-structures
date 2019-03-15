@@ -1,44 +1,64 @@
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+
 public class PersonCollectionSlowImpl implements PersonCollection {
 
-    // TODO: define the underlying data structures here ...
+    private Map<String, Person> people;
+
+    public PersonCollectionSlowImpl() {
+        this.people = new TreeMap<>();
+    }
 
     @Override
     public boolean addPerson(String email, String name, int age, String town) {
-        return false;
+        if (this.people.containsKey(email)) return false;
+        this.people.put(email, new Person(email, name, age, town));
+        return true;
     }
 
     @Override
     public int getCount() {
-        throw new UnsupportedOperationException();
+        return this.people.size();
     }
 
     @Override
     public Person findPerson(String email) {
-        throw new UnsupportedOperationException();
+        return this.people.getOrDefault(email, null);
     }
 
     @Override
     public boolean deletePerson(String email) {
-        throw new UnsupportedOperationException();
+        if (!this.people.containsKey(email)) return false;
+        this.people.remove(email);
+        return true;
     }
 
     @Override
     public Iterable<Person> findPersons(String emailDomain) {
-        throw new UnsupportedOperationException();
+        return this.people.values().stream()
+                .filter(p -> p.getEmail().substring(p.getEmail().indexOf("@") + 1).equals(emailDomain))
+                .collect(Collectors.toList());
     }
 
     @Override
     public Iterable<Person> findPersons(String name, String town) {
-        throw new UnsupportedOperationException();
+       return this.people.values().stream()
+               .filter(p -> p.getName().equals(name) && p.getTown().equals(town))
+               .collect(Collectors.toList());
     }
 
     @Override
     public Iterable<Person> findPersons(int startAge, int endAge) {
-        throw new UnsupportedOperationException();
+        return this.people.values().stream()
+                .filter(p -> p.getAge() >= startAge && p.getAge() <= endAge)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Iterable<Person> findPersons(int startAge, int endAge, String town) {
-        throw new UnsupportedOperationException();
+        return this.people.values().stream()
+                .filter(p -> p.getAge() >= startAge && p.getAge() <= endAge && p.getTown().equals(town))
+                .collect(Collectors.toList());
     }
 }
